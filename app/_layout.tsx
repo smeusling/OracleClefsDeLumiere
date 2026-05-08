@@ -6,6 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import {
   CormorantGaramond_400Regular,
   CormorantGaramond_400Regular_Italic,
+  CormorantGaramond_600SemiBold,
 } from '@expo-google-fonts/cormorant-garamond';
 import { Lato_300Light, Lato_400Regular } from '@expo-google-fonts/lato';
 import { theme } from '@/constants/theme';
@@ -16,6 +17,7 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     CormorantGaramond_400Regular,
     CormorantGaramond_400Regular_Italic,
+    CormorantGaramond_600SemiBold,
     Lato_300Light,
     Lato_400Regular,
   });
