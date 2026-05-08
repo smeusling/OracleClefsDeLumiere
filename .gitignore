@@ -1,43 +1,63 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
+# ─── Dependencies ────────────────────────────────────────────────────────────
 node_modules/
+.pnp
+.pnp.js
 
-# Expo
+# ─── Expo ────────────────────────────────────────────────────────────────────
 .expo/
 dist/
 web-build/
 expo-env.d.ts
 
-# Native
+# ─── EAS / Builds ────────────────────────────────────────────────────────────
+.easignore
+eas-build-pre-install.sh
+*.ipa
+*.apk
+*.aab
+
+# ─── Native generated folders (Expo managed workflow) ────────────────────────
+/ios
+/android
 .kotlin/
-*.orig.*
+
+# ─── Native signing & credentials ────────────────────────────────────────────
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
+*.orig.*
+google-services.json
+GoogleService-Info.plist
 
-# Metro
+# ─── Metro bundler ───────────────────────────────────────────────────────────
 .metro-health-check*
 
-# debug
+# ─── TypeScript ──────────────────────────────────────────────────────────────
+*.tsbuildinfo
+
+# ─── Environment variables ───────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─── Logs ────────────────────────────────────────────────────────────────────
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+*.log
 
-# macOS
+# ─── macOS ───────────────────────────────────────────────────────────────────
 .DS_Store
+.AppleDouble
+.LSOverride
 *.pem
 
-# local env files
-.env*.local
+# ─── VSCode ──────────────────────────────────────────────────────────────────
+.vscode/launch.json
+.vscode/tasks.json
 
-# typescript
-*.tsbuildinfo
-
+# ─── Misc ────────────────────────────────────────────────────────────────────
 app-example
-
-# generated native folders
-/ios
-/android
+.turbo
