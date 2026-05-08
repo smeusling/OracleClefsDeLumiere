@@ -1,14 +1,13 @@
 import { useState, useCallback } from 'react';
 
-// TODO: importer les données depuis data/cards.json
-type CardId = string;
+const CARD_COUNT = 40;
 
 export function useOracle() {
-  const [drawnId, setDrawnId] = useState<CardId | null>(null);
+  const [drawnId, setDrawnId] = useState<string | null>(null);
 
   const draw = useCallback(() => {
-    // TODO: tirer une carte aléatoire depuis cards.json
-    setDrawnId(null);
+    const n = Math.floor(Math.random() * CARD_COUNT) + 1;
+    setDrawnId(String(n).padStart(2, '0'));
   }, []);
 
   const reset = useCallback(() => {
