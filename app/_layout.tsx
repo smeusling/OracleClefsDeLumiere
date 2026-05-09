@@ -1,3 +1,4 @@
+import 'react-native-reanimated';
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -42,8 +43,8 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="card/[id]" options={{ title: 'Tirage' }} />
-        <Stack.Screen name="detail/[id]" options={{ title: 'Interprétation' }} />
+        <Stack.Screen name="card" options={{ title: 'Tirage' }} />
+        <Stack.Screen name="detail" options={{ title: 'Interprétation' }} />
       </Stack>
       <StatusBar style="dark" />
     </>

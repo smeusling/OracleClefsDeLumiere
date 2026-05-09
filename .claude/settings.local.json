@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(npx expo *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(node -e \"const c = require\\('/Users/steph/Development/OracleClefsDeLumiere/data/cards.json'\\); console.log\\(JSON.stringify\\(c[11], null, 2\\)\\)\")",
+      "Bash(node -e \"const p = require\\('/Users/steph/Development/OracleClefsDeLumiere/node_modules/expo-router/package.json'\\); console.log\\(p.version\\)\")"
     ]
   }
 }

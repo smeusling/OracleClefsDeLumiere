@@ -1,9 +1,9 @@
 import { theme } from '@/constants/theme';
 import { useOracle } from '@/hooks/useOracle';
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
-import { useEffect, useRef } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useRef } from 'react';
+import { Animated, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import clefSource from '../assets/images/clef.png';
@@ -12,14 +12,17 @@ export default function HomeScreen() {
   const { drawnId, draw } = useOracle();
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    draw();
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1400,
-      useNativeDriver: true,
-    }).start();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      draw();
+      fadeAnim.setValue(0);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1400,
+        useNativeDriver: true,
+      }).start();
+    }, []),
+  );
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -54,7 +57,7 @@ export default function HomeScreen() {
             style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
             onPress={() => {
               if (drawnId) {
-                router.push({ pathname: '/card/[id]', params: { id: drawnId } });
+                router.push({ pathname: '/card', params: { id: drawnId } });
               }
             }}
           >
@@ -62,11 +65,11 @@ export default function HomeScreen() {
           </Pressable>
 
           <View style={styles.footer}>
-            <Pressable hitSlop={8}>
+            <Pressable hitSlop={8} onPress={() => Linking.openURL('https://www.manonmoureau.fr/soutenir')}>
               <Text style={styles.footerLink}>Soutenir</Text>
             </Pressable>
             <Text style={styles.footerDot}>·</Text>
-            <Pressable hitSlop={8}>
+            <Pressable hitSlop={8} onPress={() => Linking.openURL('https://www.manonmoureau.fr/l-oracle-des-clefs-de-lumiere')}>
               <Text style={styles.footerLink}>Se procurer</Text>
             </Pressable>
           </View>
