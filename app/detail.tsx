@@ -116,18 +116,6 @@ export default function DetailScreen() {
             {/* Titre */}
             <Text style={styles.cardTitle}>{card.title}</Text>
 
-            {/* Séparateur : ─── ✦✦ ✦ ✦✦ ─── */}
-            <View style={styles.keySepRow}>
-              <View style={styles.keySepLine} />
-              <Text style={styles.keySepDots}>✦ ✦</Text>
-              <Text style={styles.keySepDotBig}>✦</Text>
-              <Text style={styles.keySepDots}>✦ ✦</Text>
-              <View style={styles.keySepLine} />
-            </View>
-
-            {/* Texte de la clef */}
-            <Text style={styles.clefText}>{card.clef}</Text>
-
             {/* Ligne séparatrice avec dégradé aux extrémités */}
             <LinearGradient
               colors={['rgba(232,212,158,0)', '#E8D49E', '#E8D49E', 'rgba(232,212,158,0)']}
@@ -205,7 +193,7 @@ const styles = StyleSheet.create({
   navCenterTitle: {
     fontFamily: 'CormorantGaramond_400Regular',
     fontSize: 30,
-    lineHeight: 30,
+    lineHeight: 35,
     color: theme.colors.primary,
   },
   navBorder: {
@@ -243,42 +231,6 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     textAlign: 'center',
     marginBottom: 22,
-  },
-
-  /* ── Séparateur ── */
-  keySepRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    gap: 8,
-    marginBottom: 26,
-  },
-  keySepLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: theme.colors.gold,
-    opacity: 0.35,
-  },
-  keySepDots: {
-    fontFamily: 'CormorantGaramond_400Regular',
-    fontSize: 10,
-    color: theme.colors.gold,
-    letterSpacing: 4,
-  },
-  keySepDotBig: {
-    fontFamily: 'CormorantGaramond_400Regular',
-    fontSize: 14,
-    color: theme.colors.gold,
-  },
-
-  /* ── Clef ── */
-  clefText: {
-    fontFamily: 'Lato_400Regular',
-    fontSize: 16,
-    lineHeight: 31,
-    textAlign: 'center',
-    color: theme.colors.text,
-    marginBottom: 30,
   },
 
   /* ── Ligne séparatrice ── */

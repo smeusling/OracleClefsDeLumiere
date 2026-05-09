@@ -84,8 +84,10 @@ export default function CardScreen() {
                   style={styles.cardTitle}
                   numberOfLines={1}
                   adjustsFontSizeToFit
-                  minimumFontScale={0.5}
+                  minimumFontScale={0.7}
                 >
+                  <Text style={styles.cardNumber}>{String(card.id)}</Text>
+                  <Text style={styles.cardDot}> · </Text>
                   {card.title.toUpperCase()}
                 </Text>
 
@@ -94,9 +96,16 @@ export default function CardScreen() {
                   <Text style={styles.separatorDiamond}>✦</Text>
                   <View style={styles.separatorLine} />
                 </View>
+              </View>
 
-                <Text style={styles.cardNumber}>
-                  {String(card.id)}
+              {/* Texte de la clef */}
+              <View style={styles.clefSection}>
+                <Text
+                  style={styles.clefText}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.6}
+                >
+                  {card.clef}
                 </Text>
               </View>
 
@@ -181,12 +190,27 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
+  /* ── Clef ── */
+  clefSection: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  clefText: {
+    fontFamily: 'CormorantGaramond_400Regular',
+    fontSize: 19,
+    lineHeight: 27,
+    color: theme.colors.text,
+    textAlign: 'center',
+  },
+
   /* ── Info ── */
   infoSection: {
     alignItems: 'center',
     paddingTop: 20,
     gap: 12,
-    paddingHorizontal: 40,
+    paddingHorizontal: 16,
   },
   cardTitle: {
     fontFamily: 'CormorantGaramond_600SemiBold',
@@ -213,9 +237,11 @@ const styles = StyleSheet.create({
   },
   cardNumber: {
     fontFamily: 'CormorantGaramond_600SemiBold',
-    fontSize: 25,
+    color: theme.colors.text,
+  },
+  cardDot: {
+    fontFamily: 'CormorantGaramond_400Regular',
     color: theme.colors.gold,
-    letterSpacing: 3,
   },
 
   /* ── Séparateur bas avec dégradé ── */
