@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const GOLD_TRANSPARENT = 'rgba(201,168,76,0)';
 const TOP_GUTTER = 40;
 
 export default function CardScreen() {
@@ -23,6 +22,7 @@ export default function CardScreen() {
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const chevronAnim = useRef(new Animated.Value(0)).current;
 
   const card = cards.find(c => String(c.id).padStart(2, '0') === id);
 
@@ -32,6 +32,13 @@ export default function CardScreen() {
       duration: 700,
       useNativeDriver: true,
     }).start();
+
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(chevronAnim, { toValue: 6, duration: 700, useNativeDriver: true }),
+        Animated.timing(chevronAnim, { toValue: 0, duration: 700, useNativeDriver: true }),
+      ]),
+    ).start();
   }, []);
 
   if (!card) return null;
@@ -71,7 +78,7 @@ export default function CardScreen() {
                 transition={400}
               />
               <LinearGradient
-                colors={['rgba(250,240,238,0)', theme.colors.background]}
+                colors={[theme.colors.backgroundTransparent, theme.colors.background]}
                 style={styles.imageGradient}
               />
             </Pressable>
@@ -113,7 +120,7 @@ export default function CardScreen() {
               <View style={styles.bottomSepContainer}>
                 <View style={styles.bottomSepRow}>
                   <LinearGradient
-                    colors={[GOLD_TRANSPARENT, theme.colors.gold] as [string, string]}
+                    colors={[theme.colors.goldTransparent, theme.colors.gold] as [string, string]}
                     start={{ x: 0, y: 0.5 }}
                     end={{ x: 1, y: 0.5 }}
                     style={styles.gradientLine}
@@ -122,12 +129,17 @@ export default function CardScreen() {
                   <Text style={styles.bigDiamond}>✦</Text>
                   <Text style={styles.smallDiamond}>✦</Text>
                   <LinearGradient
-                    colors={[theme.colors.gold, GOLD_TRANSPARENT] as [string, string]}
+                    colors={[theme.colors.gold, theme.colors.goldTransparent] as [string, string]}
                     start={{ x: 0, y: 0.5 }}
                     end={{ x: 1, y: 0.5 }}
                     style={styles.gradientLine}
                   />
                 </View>
+                <Animated.Text
+                  style={[styles.chevron, { transform: [{ translateY: chevronAnim }] }]}
+                >
+                  ⌄
+                </Animated.Text>
               </View>
 
             </Pressable>
@@ -161,7 +173,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(201, 168, 76, 0.35)',
+    borderColor: theme.colors.goldBorder,
   },
 
   /* ── Clip image (View interne, overflow sans bordure) ── */
@@ -247,7 +259,15 @@ const styles = StyleSheet.create({
   /* ── Séparateur bas avec dégradé ── */
   bottomSepContainer: {
     alignItems: 'center',
-    paddingBottom: 28,
+    paddingBottom: 12,
+    gap: 8,
+  },
+  chevron: {
+    fontFamily: 'CormorantGaramond_400Regular',
+    fontSize: 20,
+    color: theme.colors.gold,
+    opacity: 0.7,
+    lineHeight: 20,
   },
   bottomSepRow: {
     flexDirection: 'row',
@@ -279,7 +299,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: 'rgba(250, 240, 238, 0.85)',
+    backgroundColor: theme.colors.backgroundFrosted,
     alignItems: 'center',
     justifyContent: 'center',
   },

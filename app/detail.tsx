@@ -33,7 +33,6 @@ export default function DetailScreen() {
   if (!card) return null;
 
   const cardNum = String(card.id);
-  const cardNumDotted = '· ' + cardNum + ' ·';
 
   const handleBack = () => {
     screenOpacity.value = withTiming(0, { duration: SCREEN_FADE_DURATION }, () => {
@@ -81,7 +80,6 @@ export default function DetailScreen() {
 
             <Animated.View style={[styles.navCenter, navTitleStyle]}>
               <View style={styles.navCenterRow}>
-                <Text style={styles.navCenterDot}>·</Text>
                 <Text style={styles.navCenterNumber}>{cardNum}</Text>
                 <Text style={styles.navCenterDot}>·</Text>
                 <Text style={styles.navCenterTitle} numberOfLines={1}>{card.title}</Text>
@@ -110,15 +108,16 @@ export default function DetailScreen() {
             onScroll={scrollHandler}
             scrollEventThrottle={16}
           >
-            {/* Numéro */}
-            <Text style={styles.cardNumber}>{cardNumDotted}</Text>
-
-            {/* Titre */}
-            <Text style={styles.cardTitle}>{card.title}</Text>
+            {/* Numéro · Titre */}
+            <Text style={styles.cardTitle}>
+              <Text style={styles.cardNumber}>{cardNum}</Text>
+              <Text style={styles.cardDot}> · </Text>
+              {card.title}
+            </Text>
 
             {/* Ligne séparatrice avec dégradé aux extrémités */}
             <LinearGradient
-              colors={['rgba(232,212,158,0)', '#E8D49E', '#E8D49E', 'rgba(232,212,158,0)']}
+              colors={[theme.colors.goldLightTransparent, theme.colors.goldLight, theme.colors.goldLight, theme.colors.goldLightTransparent]}
               start={{ x: 0, y: 0.5 }}
               end={{ x: 1, y: 0.5 }}
               style={styles.thinLine}
@@ -130,7 +129,7 @@ export default function DetailScreen() {
 
           {/* Fondu bas */}
           <LinearGradient
-            colors={['rgba(250,240,238,0)', theme.colors.background]}
+            colors={[theme.colors.backgroundTransparent, theme.colors.background]}
             style={[styles.fadeOverlay, { height: insets.bottom + 100 }]}
             pointerEvents="none"
           />
@@ -180,14 +179,13 @@ const styles = StyleSheet.create({
     gap: 7,
   },
   navCenterNumber: {
-    fontFamily: 'Lato_300Light',
-    fontSize: 16,
-    letterSpacing: 1,
+    fontFamily: 'CormorantGaramond_400Regular',
+    fontSize: 20,
     color: theme.colors.textLight,
   },
   navCenterDot: {
-    fontFamily: 'Lato_400Regular',
-    fontSize: 12,
+    fontFamily: 'CormorantGaramond_400Regular',
+    fontSize: 20,
     color: theme.colors.gold,
   },
   navCenterTitle: {
@@ -198,7 +196,7 @@ const styles = StyleSheet.create({
   },
   navBorder: {
     height: 1,
-    backgroundColor: '#E8D49E',
+    backgroundColor: theme.colors.goldLight,
     opacity: 0.7,
     marginHorizontal: 24,
   },
@@ -213,14 +211,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  /* ── Numéro ── */
+  /* ── Numéro (span inline dans cardTitle) ── */
   cardNumber: {
-    fontFamily: 'Lato_300Light',
-    fontSize: 15,
-    letterSpacing: 3,
     color: theme.colors.textLight,
-    textAlign: 'center',
-    marginBottom: 10,
+  },
+
+  cardDot: {
+    fontFamily: 'CormorantGaramond_400Regular',
+    color: theme.colors.gold,
   },
 
   /* ── Titre ── */

@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   separatorLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#E8D49E',
+    backgroundColor: theme.colors.goldLight,
   },
   separatorDiamond: {
     fontFamily: 'CormorantGaramond_400Regular',
