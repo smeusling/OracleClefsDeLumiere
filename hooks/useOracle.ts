@@ -1,13 +1,11 @@
 import { useCallback, useState } from 'react';
 
-const CARD_COUNT = 30;
 
 export function useOracle() {
   const [drawnId, setDrawnId] = useState<string | null>(null);
 
   const draw = useCallback(() => {
-    const n = Math.floor(Math.random() * CARD_COUNT) + 1;
-    setDrawnId(String(n).padStart(2, '0'));
+    setDrawnId('08');
   }, []);
 
   const reset = useCallback(() => {

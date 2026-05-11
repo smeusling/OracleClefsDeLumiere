@@ -13,6 +13,13 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
+import ReAnimated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TOP_GUTTER = 40;
@@ -22,7 +29,7 @@ export default function CardScreen() {
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const chevronAnim = useRef(new Animated.Value(0)).current;
+  const tapHintOpacity = useSharedValue(1);
 
   const card = cards.find(c => String(c.id).padStart(2, '0') === id);
 
@@ -33,18 +40,24 @@ export default function CardScreen() {
       useNativeDriver: true,
     }).start();
 
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(chevronAnim, { toValue: 6, duration: 700, useNativeDriver: true }),
-        Animated.timing(chevronAnim, { toValue: 0, duration: 700, useNativeDriver: true }),
-      ]),
-    ).start();
+    tapHintOpacity.value = withRepeat(
+      withSequence(
+        withTiming(0.3, { duration: 1500 }),
+        withTiming(1, { duration: 1500 }),
+      ),
+      -1,
+      false,
+    );
   }, []);
+
+  const tapHintStyle = useAnimatedStyle(() => ({
+    opacity: tapHintOpacity.value,
+  }));
 
   if (!card) return null;
 
   const cardTop = insets.top + TOP_GUTTER;
-  const cardBottom = insets.bottom + 20;
+  const cardBottom = insets.bottom + 43;
   const cardHeight = height - cardTop - cardBottom;
   const imageHeight = Math.round(cardHeight * 0.57);
 
@@ -135,16 +148,18 @@ export default function CardScreen() {
                     style={styles.gradientLine}
                   />
                 </View>
-                <Animated.Text
-                  style={[styles.chevron, { transform: [{ translateY: chevronAnim }] }]}
-                >
-                  ⌄
-                </Animated.Text>
               </View>
 
             </Pressable>
           </View>
         </Animated.View>
+
+        {/* ── Indicateur de tap ── */}
+        <ReAnimated.Text
+          style={[styles.tapHint, tapHintStyle, { bottom: insets.bottom + 8 }]}
+        >
+          Effleurer pour révéler
+        </ReAnimated.Text>
 
         {/* ── Bouton fermer ── */}
         <Pressable
@@ -220,7 +235,7 @@ const styles = StyleSheet.create({
   /* ── Info ── */
   infoSection: {
     alignItems: 'center',
-    paddingTop: 20,
+    paddingTop: 5,
     gap: 12,
     paddingHorizontal: 16,
   },
@@ -262,12 +277,12 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     gap: 8,
   },
-  chevron: {
-    fontFamily: 'CormorantGaramond_400Regular',
-    fontSize: 20,
-    color: theme.colors.gold,
-    opacity: 0.7,
-    lineHeight: 20,
+  tapHint: {
+    position: 'absolute',
+    alignSelf: 'center',
+    fontFamily: 'CormorantGaramond_400Regular_Italic',
+    fontSize: 16,
+    color: theme.colors.textLight,
   },
   bottomSepRow: {
     flexDirection: 'row',
