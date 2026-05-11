@@ -17,7 +17,6 @@ import ReAnimated, {
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
-  withSequence,
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -41,12 +40,9 @@ export default function CardScreen() {
     }).start();
 
     tapHintOpacity.value = withRepeat(
-      withSequence(
-        withTiming(0.3, { duration: 1500 }),
-        withTiming(1, { duration: 1500 }),
-      ),
+      withTiming(0.3, { duration: 1500 }),
       -1,
-      false,
+      true,
     );
   }, []);
 
@@ -156,6 +152,7 @@ export default function CardScreen() {
 
         {/* ── Indicateur de tap ── */}
         <ReAnimated.Text
+          onPress={handleGoToDetail}
           style={[styles.tapHint, tapHintStyle, { bottom: insets.bottom + 8 }]}
         >
           Effleurer pour révéler
@@ -283,6 +280,7 @@ const styles = StyleSheet.create({
     fontFamily: 'CormorantGaramond_400Regular_Italic',
     fontSize: 16,
     color: theme.colors.textLight,
+    padding: 8,
   },
   bottomSepRow: {
     flexDirection: 'row',
