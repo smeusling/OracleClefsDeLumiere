@@ -5,7 +5,6 @@ import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
-  runOnJS,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
@@ -35,9 +34,8 @@ export default function DetailScreen() {
   const cardNum = String(card.id);
 
   const handleBack = () => {
-    screenOpacity.value = withTiming(0, { duration: SCREEN_FADE_DURATION }, () => {
-      runOnJS(router.back)();
-    });
+    screenOpacity.value = withTiming(0, { duration: SCREEN_FADE_DURATION });
+    setTimeout(() => router.back(), SCREEN_FADE_DURATION);
   };
 
   const scrollHandler = useAnimatedScrollHandler({

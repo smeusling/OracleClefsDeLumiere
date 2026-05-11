@@ -108,9 +108,19 @@ export default function CardScreen() {
                 </Text>
 
                 <View style={styles.separatorRow}>
-                  <View style={styles.separatorLine} />
+                  <LinearGradient
+                    colors={[theme.colors.goldTransparent, theme.colors.gold] as [string, string]}
+                    start={{ x: 0, y: 0.5 }}
+                    end={{ x: 1, y: 0.5 }}
+                    style={styles.gradientLine}
+                  />
                   <Text style={styles.separatorDiamond}>✦</Text>
-                  <View style={styles.separatorLine} />
+                  <LinearGradient
+                    colors={[theme.colors.gold, theme.colors.goldTransparent] as [string, string]}
+                    start={{ x: 0, y: 0.5 }}
+                    end={{ x: 1, y: 0.5 }}
+                    style={styles.gradientLine}
+                  />
                 </View>
               </View>
 
@@ -318,8 +328,8 @@ const styles = StyleSheet.create({
   },
   closeText: {
     fontFamily: 'Lato_400Regular',
-    fontSize: 15,
-    color: theme.colors.text,
+    fontSize: 18,
+    color: theme.colors.primary,
     lineHeight: 20,
   },
 });
