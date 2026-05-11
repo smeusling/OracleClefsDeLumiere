@@ -74,26 +74,24 @@ export default function CardScreen() {
           ]}
         >
           <View style={styles.cardInner}>
+            <Pressable onPress={handleGoToDetail} style={styles.cardPressable}>
 
-            {/* Image */}
-            <Pressable
-              onPress={handleGoToDetail}
-              style={[styles.imageContainer, { height: imageHeight }]}
-            >
-              <Image
-                source={cardImages[id ?? '01']}
-                style={{ position: 'absolute', top: -2, left: 0, right: 0, bottom: 0 }}
-                contentFit="cover"
-                transition={400}
-              />
-              <LinearGradient
-                colors={[theme.colors.backgroundTransparent, theme.colors.background]}
-                style={styles.imageGradient}
-              />
-            </Pressable>
+              {/* Image */}
+              <View style={[styles.imageContainer, { height: imageHeight }]}>
+                <Image
+                  source={cardImages[id ?? '01']}
+                  style={{ position: 'absolute', top: -2, left: 0, right: 0, bottom: 0 }}
+                  contentFit="cover"
+                  transition={400}
+                />
+                <LinearGradient
+                  colors={[theme.colors.backgroundTransparent, theme.colors.background]}
+                  style={styles.imageGradient}
+                />
+              </View>
 
-            {/* Contenu sous l'image */}
-            <Pressable style={styles.cardContent} onPress={handleGoToDetail}>
+              {/* Contenu sous l'image */}
+              <View style={styles.cardContent}>
 
               <View style={styles.infoSection}>
                 <Text
@@ -156,6 +154,7 @@ export default function CardScreen() {
                 </View>
               </View>
 
+              </View>
             </Pressable>
           </View>
         </Animated.View>
@@ -206,16 +205,20 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
 
+  cardPressable: {
+    flex: 1,
+  },
+
   /* ── Image ── */
   imageContainer: {
     width: '100%',
   },
   imageGradient: {
     position: 'absolute',
-    bottom: 0,
+    bottom: -2,
     left: 0,
     right: 0,
-    height: 160,
+    height: 162,
   },
 
   /* ── Contenu sous l'image ── */
