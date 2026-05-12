@@ -13,12 +13,7 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
-import ReAnimated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TOP_GUTTER = 40;
@@ -28,7 +23,7 @@ export default function CardScreen() {
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const tapHintOpacity = useSharedValue(1);
+  const tapHintOpacity = useRef(new Animated.Value(1)).current;
 
   const card = cards.find(c => String(c.id).padStart(2, '0') === id);
 
@@ -39,16 +34,13 @@ export default function CardScreen() {
       useNativeDriver: true,
     }).start();
 
-    tapHintOpacity.value = withRepeat(
-      withTiming(0.4, { duration: 2000 }),
-      -1,
-      true,
-    );
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(tapHintOpacity, { toValue: 0.4, duration: 2000, useNativeDriver: true }),
+        Animated.timing(tapHintOpacity, { toValue: 1, duration: 2000, useNativeDriver: true }),
+      ]),
+    ).start();
   }, []);
-
-  const tapHintStyle = useAnimatedStyle(() => ({
-    opacity: tapHintOpacity.value,
-  }));
 
   if (!card) return null;
 
@@ -160,13 +152,13 @@ export default function CardScreen() {
         </Animated.View>
 
         {/* ── Indicateur de tap ── */}
-        <ReAnimated.Text
+        <Animated.Text
           onPress={handleGoToDetail}
           suppressHighlighting
-          style={[styles.tapHint, tapHintStyle, { bottom: insets.bottom + 2 }]}
+          style={[styles.tapHint, { opacity: tapHintOpacity, bottom: insets.bottom + 2 }]}
         >
           Dévoile ton message
-        </ReAnimated.Text>
+        </Animated.Text>
 
         {/* ── Bouton fermer ── */}
         <Pressable
