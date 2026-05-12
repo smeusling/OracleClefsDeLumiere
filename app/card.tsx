@@ -40,7 +40,7 @@ export default function CardScreen() {
     }).start();
 
     tapHintOpacity.value = withRepeat(
-      withTiming(0.3, { duration: 1500 }),
+      withTiming(0.4, { duration: 2000 }),
       -1,
       true,
     );
@@ -162,9 +162,10 @@ export default function CardScreen() {
         {/* ── Indicateur de tap ── */}
         <ReAnimated.Text
           onPress={handleGoToDetail}
-          style={[styles.tapHint, tapHintStyle, { bottom: insets.bottom + 8 }]}
+          suppressHighlighting
+          style={[styles.tapHint, tapHintStyle, { bottom: insets.bottom + 2 }]}
         >
-          Effleurer pour révéler
+          Dévoile ton message
         </ReAnimated.Text>
 
         {/* ── Bouton fermer ── */}
@@ -290,10 +291,11 @@ const styles = StyleSheet.create({
   tapHint: {
     position: 'absolute',
     alignSelf: 'center',
-    fontFamily: 'CormorantGaramond_400Regular_Italic',
-    fontSize: 16,
-    color: theme.colors.textLight,
-    padding: 8,
+    fontFamily: 'CormorantGaramond_600SemiBold_Italic',
+    fontSize: 20,
+    color: theme.colors.primary,
+    paddingHorizontal: 8,
+    paddingBottom: 4,
   },
   bottomSepRow: {
     flexDirection: 'row',
