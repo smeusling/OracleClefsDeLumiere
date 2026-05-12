@@ -3,7 +3,8 @@ import { useOracle } from '@/hooks/useOracle';
 import { Image } from 'expo-image';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useRef } from 'react';
-import { Animated, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import clefSource from '../assets/images/clef.png';
@@ -65,11 +66,11 @@ export default function HomeScreen() {
           </Pressable>
 
           <View style={styles.footer}>
-            <Pressable hitSlop={8} onPress={() => Linking.openURL('https://www.manonmoureau.fr/soutenir')}>
+            <Pressable hitSlop={8} onPress={() => WebBrowser.openBrowserAsync('https://www.manonmoureau.fr/soutenir')}>
               <Text style={styles.footerLink}>Soutenir</Text>
             </Pressable>
             <Text style={styles.footerDot}>·</Text>
-            <Pressable hitSlop={8} onPress={() => Linking.openURL('https://www.manonmoureau.fr/l-oracle-des-clefs-de-lumiere')}>
+            <Pressable hitSlop={8} onPress={() => WebBrowser.openBrowserAsync('https://www.manonmoureau.fr/l-oracle-des-clefs-de-lumiere')}>
               <Text style={styles.footerLink}>Se procurer</Text>
             </Pressable>
           </View>
