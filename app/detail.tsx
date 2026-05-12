@@ -3,7 +3,7 @@ import cards from '@/data/cards.json';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { LayoutChangeEvent, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   useAnimatedScrollHandler,
   useAnimatedStyle,
@@ -12,7 +12,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const SHOW_THRESHOLD = 10;
 const NAV_FADE_DURATION = 700;
 const SCREEN_FADE_DURATION = 400;
 
@@ -23,6 +22,12 @@ export default function DetailScreen() {
   const screenOpacity = useSharedValue(0);
   const navOpacity = useSharedValue(0);
   const isShowing = useSharedValue(false);
+  const titleThreshold = useSharedValue(80);
+
+  const handleTitleLayout = (event: LayoutChangeEvent) => {
+    const { y, height } = event.nativeEvent.layout;
+    titleThreshold.value = y + height - 25;
+  };
 
   useEffect(() => {
     screenOpacity.value = withTiming(1, { duration: SCREEN_FADE_DURATION });
@@ -41,10 +46,10 @@ export default function DetailScreen() {
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
       const y = event.contentOffset.y;
-      if (y > SHOW_THRESHOLD && !isShowing.value) {
+      if (y > titleThreshold.value && !isShowing.value) {
         isShowing.value = true;
         navOpacity.value = withTiming(1, { duration: NAV_FADE_DURATION });
-      } else if (y <= SHOW_THRESHOLD && isShowing.value) {
+      } else if (y <= titleThreshold.value && isShowing.value) {
         isShowing.value = false;
         navOpacity.value = withTiming(0, { duration: NAV_FADE_DURATION });
       }
@@ -107,7 +112,7 @@ export default function DetailScreen() {
             scrollEventThrottle={16}
           >
             {/* Numéro · Titre */}
-            <Text style={styles.cardTitle}>
+            <Text style={styles.cardTitle} onLayout={handleTitleLayout}>
               <Text style={styles.cardNumber}>{cardNum}</Text>
               <Text style={styles.cardDot}> · </Text>
               {card.title}
