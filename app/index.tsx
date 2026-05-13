@@ -1,9 +1,10 @@
 import { theme } from '@/constants/theme';
 import { useOracle } from '@/hooks/useOracle';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useRef } from 'react';
 import * as WebBrowser from 'expo-web-browser';
+import { useCallback, useRef } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -34,9 +35,19 @@ export default function HomeScreen() {
           <Text style={styles.surtitle}>L'ORACLE DES</Text>
           <Text style={styles.title}>Clefs de Lumière</Text>
           <View style={styles.separatorRow}>
-            <View style={styles.separatorLine} />
+            <LinearGradient
+              colors={[theme.colors.goldTransparent, theme.colors.gold] as [string, string]}
+              start={{ x: 0, y: 0.5 }}
+              end={{ x: 1, y: 0.5 }}
+              style={styles.gradientLine}
+            />
             <Text style={styles.separatorDiamond}>✦</Text>
-            <View style={styles.separatorLine} />
+            <LinearGradient
+              colors={[theme.colors.gold, theme.colors.goldTransparent] as [string, string]}
+              start={{ x: 0, y: 0.5 }}
+              end={{ x: 1, y: 0.5 }}
+              style={styles.gradientLine}
+            />
           </View>
         </View>
 
@@ -119,7 +130,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     marginTop: 14,
-    width: 130,
+    width: 180,
   },
   separatorLine: {
     flex: 1,
@@ -130,6 +141,10 @@ const styles = StyleSheet.create({
     fontFamily: 'CormorantGaramond_400Regular',
     fontSize: 12,
     color: theme.colors.gold,
+  },
+  gradientLine: {
+    flex: 1,
+    height: 1,
   },
 
   /* ── Citation ── */

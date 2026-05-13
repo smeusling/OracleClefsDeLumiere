@@ -2,14 +2,8 @@ import { theme } from '@/constants/theme';
 import cards from '@/data/cards.json';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
-import { useEffect } from 'react';
-import { LayoutChangeEvent, Pressable, StyleSheet, Text, View } from 'react-native';
-import Animated, {
-  useAnimatedScrollHandler,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import { useEffect, useRef } from 'react';
+import { Animated, LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const NAV_FADE_DURATION = 700;
@@ -19,18 +13,18 @@ export default function DetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
 
-  const screenOpacity = useSharedValue(0);
-  const navOpacity = useSharedValue(0);
-  const isShowing = useSharedValue(false);
-  const titleThreshold = useSharedValue(80);
+  const screenOpacity = useRef(new Animated.Value(0)).current;
+  const navOpacity = useRef(new Animated.Value(0)).current;
+  const isShowing = useRef(false);
+  const titleThreshold = useRef(80);
 
   const handleTitleLayout = (event: LayoutChangeEvent) => {
     const { y, height } = event.nativeEvent.layout;
-    titleThreshold.value = y + height - 25;
+    titleThreshold.current = y + height - 25;
   };
 
   useEffect(() => {
-    screenOpacity.value = withTiming(1, { duration: SCREEN_FADE_DURATION });
+    Animated.timing(screenOpacity, { toValue: 1, duration: SCREEN_FADE_DURATION, useNativeDriver: true }).start();
   }, []);
 
   const card = cards.find(c => String(c.id).padStart(2, '0') === id);
@@ -39,30 +33,20 @@ export default function DetailScreen() {
   const cardNum = String(card.id);
 
   const handleBack = () => {
-    screenOpacity.value = withTiming(0, { duration: SCREEN_FADE_DURATION });
+    Animated.timing(screenOpacity, { toValue: 0, duration: SCREEN_FADE_DURATION, useNativeDriver: true }).start();
     setTimeout(() => router.back(), SCREEN_FADE_DURATION);
   };
 
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      const y = event.contentOffset.y;
-      if (y > titleThreshold.value && !isShowing.value) {
-        isShowing.value = true;
-        navOpacity.value = withTiming(1, { duration: NAV_FADE_DURATION });
-      } else if (y <= titleThreshold.value && isShowing.value) {
-        isShowing.value = false;
-        navOpacity.value = withTiming(0, { duration: NAV_FADE_DURATION });
-      }
-    },
-  });
-
-  const screenStyle = useAnimatedStyle(() => ({
-    opacity: screenOpacity.value,
-  }));
-
-  const navTitleStyle = useAnimatedStyle(() => ({
-    opacity: navOpacity.value,
-  }));
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const y = event.nativeEvent.contentOffset.y;
+    if (y > titleThreshold.current && !isShowing.current) {
+      isShowing.current = true;
+      Animated.timing(navOpacity, { toValue: 1, duration: NAV_FADE_DURATION, useNativeDriver: true }).start();
+    } else if (y <= titleThreshold.current && isShowing.current) {
+      isShowing.current = false;
+      Animated.timing(navOpacity, { toValue: 0, duration: NAV_FADE_DURATION, useNativeDriver: true }).start();
+    }
+  };
 
   return (
     <>
@@ -81,7 +65,7 @@ export default function DetailScreen() {
               <Text style={styles.navButtonText}>←</Text>
             </Pressable>
 
-            <Animated.View style={[styles.navCenter, navTitleStyle]}>
+            <Animated.View style={[styles.navCenter, { opacity: navOpacity }]}>
               <View style={styles.navCenterRow}>
                 <Text style={styles.navCenterNumber}>{cardNum}</Text>
                 <Text style={styles.navCenterDot}>·</Text>
@@ -101,14 +85,14 @@ export default function DetailScreen() {
         </View>
 
         {/* ── Contenu scrollable ── */}
-        <Animated.View style={[styles.content, screenStyle]}>
+        <Animated.View style={[styles.content, { opacity: screenOpacity }]}>
           <Animated.ScrollView
             contentContainerStyle={[
               styles.scrollContent,
               { paddingBottom: insets.bottom + 110 },
             ]}
             showsVerticalScrollIndicator={false}
-            onScroll={scrollHandler}
+            onScroll={handleScroll}
             scrollEventThrottle={16}
           >
             {/* Numéro · Titre */}
@@ -183,7 +167,7 @@ const styles = StyleSheet.create({
   },
   navCenterNumber: {
     fontFamily: 'CormorantGaramond_400Regular',
-    fontSize: 20,
+    fontSize: 25,
     color: theme.colors.textLight,
   },
   navCenterDot: {
@@ -193,7 +177,7 @@ const styles = StyleSheet.create({
   },
   navCenterTitle: {
     fontFamily: 'CormorantGaramond_400Regular',
-    fontSize: 30,
+    fontSize: 32,
     lineHeight: 35,
     color: theme.colors.primary,
   },
@@ -244,8 +228,8 @@ const styles = StyleSheet.create({
   /* ── Description ── */
   descriptionText: {
     fontFamily: 'CormorantGaramond_400Regular_Italic',
-    fontSize: 18,
-    lineHeight: 27,
+    fontSize: 20,
+    lineHeight: 28,
     color: theme.colors.textLight,
     opacity: 0.95,
     textAlign: 'justify',
