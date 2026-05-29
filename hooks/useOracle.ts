@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-const CARD_COUNT = 30;
+const CARD_COUNT = 33;
 
 export function useOracle() {
   const [drawnId, setDrawnId] = useState<string | null>(null);

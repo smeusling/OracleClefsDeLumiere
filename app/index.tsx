@@ -4,15 +4,29 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { useCallback, useRef } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useCallback, useRef, useState } from 'react';
+import { Animated, Linking, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import clefSource from '../assets/images/clef.png';
 
 export default function HomeScreen() {
   const { drawnId, draw } = useOracle();
+  const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [modalVisible, setModalVisible] = useState(false);
+  const modalOpacity = useRef(new Animated.Value(0)).current;
+
+  const openModal = () => {
+    setModalVisible(true);
+    Animated.timing(modalOpacity, { toValue: 1, duration: 300, useNativeDriver: true }).start();
+  };
+
+  const closeModal = () => {
+    Animated.timing(modalOpacity, { toValue: 0, duration: 300, useNativeDriver: true }).start(() => {
+      setModalVisible(false);
+    });
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -88,6 +102,47 @@ export default function HomeScreen() {
         </View>
 
       </Animated.View>
+
+      {/* ── Bouton ⓘ ── */}
+      <Pressable style={[styles.infoButton, { top: insets.top + 0 }]} onPress={openModal} hitSlop={12}>
+        <Text style={styles.infoIcon}>ⓘ</Text>
+      </Pressable>
+
+      {/* ── Modal À propos ── */}
+      <Modal visible={modalVisible} transparent animationType="none" onRequestClose={closeModal}>
+        <Animated.View style={[styles.modalOverlay, { opacity: modalOpacity }]}>
+          <View style={styles.modalBox}>
+            <Pressable style={styles.modalCloseButton} onPress={closeModal} hitSlop={12}>
+              <Text style={styles.modalCloseText}>✕</Text>
+            </Pressable>
+            <Text style={styles.modalText}>
+              {'Application développée avec '}
+              <Text style={styles.modalHeart}>{'♥︎'}</Text>
+              {' par\nStéphanie Meusling'}
+            </Text>
+            <Pressable hitSlop={8} onPress={() => Linking.openURL('mailto:smeusling@gmail.com')}>
+              <View style={styles.contactRow}>
+                <LinearGradient
+                  colors={[theme.colors.primaryTransparent, theme.colors.primary] as [string, string]}
+                  start={{ x: 0, y: 0.5 }}
+                  end={{ x: 1, y: 0.5 }}
+                  style={styles.gradientLine}
+                />
+                <Text style={styles.separatorDiamond}>✦</Text>
+                <Text style={styles.modalLink}>Contacter la développeuse</Text>
+                <Text style={styles.separatorDiamond}>✦</Text>
+                <LinearGradient
+                  colors={[theme.colors.primary, theme.colors.primaryTransparent] as [string, string]}
+                  start={{ x: 0, y: 0.5 }}
+                  end={{ x: 1, y: 0.5 }}
+                  style={styles.gradientLine}
+                />
+              </View>
+            </Pressable>
+          </View>
+        </Animated.View>
+      </Modal>
+
     </SafeAreaView>
   );
 }
@@ -140,7 +195,7 @@ const styles = StyleSheet.create({
   separatorDiamond: {
     fontFamily: 'CormorantGaramond_400Regular',
     fontSize: 12,
-    color: theme.colors.gold,
+    color: theme.colors.primary,
   },
   gradientLine: {
     flex: 1,
@@ -206,5 +261,83 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: theme.colors.textLight,
     opacity: 0.5,
+  },
+
+  /* ── Bouton ⓘ ── */
+  infoButton: {
+    position: 'absolute',
+    right: 20,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: theme.colors.backgroundFrosted,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoIcon: {
+    fontFamily: 'Lato_400Regular',
+    fontSize: 18,
+    color: theme.colors.textLight,
+    lineHeight: 22,
+  },
+
+  /* ── Modal ── */
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+  },
+  modalBox: {
+    backgroundColor: theme.colors.background,
+    borderRadius: 24,
+    paddingTop: 38,
+    paddingBottom: 24,
+    paddingHorizontal: 28,
+    width: '100%',
+    alignItems: 'center',
+    gap: 16,
+  },
+  modalCloseButton: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: theme.colors.backgroundFrosted,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalCloseText: {
+    fontFamily: 'Lato_400Regular',
+    fontSize: 15,
+    color: theme.colors.primary,
+    lineHeight: 17,
+  },
+  modalText: {
+    fontFamily: 'Lato_400Regular',
+    fontSize: 16,
+    lineHeight: 26,
+    color: theme.colors.text,
+    textAlign: 'center',
+  },
+  modalHeart: {
+    fontFamily: 'Lato_400Regular',
+    fontSize: 16,
+    color: theme.colors.gold,
+  },
+  contactRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    gap: 8,
+    marginTop: 10,
+  },
+  modalLink: {
+    fontFamily: 'CormorantGaramond_600SemiBold_Italic',
+    fontSize: 19,
+    color: theme.colors.primary,
   },
 });

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Oracle des Clefs de Lumiere",
-    "displayName": "L'Oracle",
+    "name": "Oracle CDL",
+    "displayName": "Oracle CDL",
     "slug": "OracleClefsDeLumiere",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -25,7 +25,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "ch.smeusling.oracleclefsdelumiere"
     },
     "web": {
       "output": "static",

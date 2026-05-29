@@ -9,6 +9,7 @@ export const theme = {
     goldBorder: 'rgba(201,168,76,0.35)',
     backgroundFrosted: 'rgba(250,240,238,0.85)',
     backgroundTransparent: 'rgba(250,240,238,0)',
+    primaryTransparent: 'rgba(196,133,122,0)',
     text: '#5C3D35',
     textLight: '#9E7B6E',
   },
