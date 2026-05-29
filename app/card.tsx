@@ -162,7 +162,7 @@ export default function CardScreen() {
 
         {/* ── Bouton fermer ── */}
         <Pressable
-          style={[styles.closeButton, { top: insets.top + 6 }]}
+          style={[styles.closeButton, { top: insets.top - 2 }]}
           onPress={() => router.dismissAll()}
           hitSlop={12}
         >
