@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignSelf: 'center',
     fontFamily: 'CormorantGaramond_600SemiBold_Italic',
-    fontSize: 20,
+    fontSize: 23,
     color: theme.colors.primary,
     paddingHorizontal: 8,
     paddingBottom: 4,
