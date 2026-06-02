@@ -47,7 +47,8 @@ export default function CardScreen() {
   const cardTop = insets.top + TOP_GUTTER;
   const cardBottom = insets.bottom + 43;
   const cardHeight = height - cardTop - cardBottom;
-  const imageHeight = Math.round(cardHeight * 0.57);
+  const imageRatio = (height < 700 && card.clef.length > 200) ? 0.50 : 0.57;
+  const imageHeight = Math.round(cardHeight * imageRatio);
 
   const handleGoToDetail = () => {
     router.push({ pathname: '/detail', params: { id: id ?? '' } });
@@ -117,16 +118,17 @@ export default function CardScreen() {
               {/* Texte de la clef */}
               <View style={styles.clefSection}>
                 <Text
-                  style={styles.clefText}
-                  adjustsFontSizeToFit
-                  minimumFontScale={0.6}
+                  style={[styles.clefText, height < 700 && { lineHeight: 24 }]}
+                  {...(height < 700 && card.clef.length > 200
+                    ? { adjustsFontSizeToFit: true, numberOfLines: 8, minimumFontScale: 0.7 }
+                    : {})}
                 >
                   {card.clef}
                 </Text>
               </View>
 
               {/* Séparateur bas : traits dégradés + grande étoile */}
-              <View style={styles.bottomSepContainer}>
+              <View style={[styles.bottomSepContainer, height < 700 && { paddingBottom: 6, gap: 4 }]}>
                 <View style={styles.bottomSepRow}>
                   <LinearGradient
                     colors={[theme.colors.goldTransparent, theme.colors.gold] as [string, string]}
