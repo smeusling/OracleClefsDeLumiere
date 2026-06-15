@@ -7,6 +7,7 @@ import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import {
   Animated,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -47,7 +48,8 @@ export default function CardScreen() {
   const cardTop = insets.top + TOP_GUTTER;
   const cardBottom = insets.bottom + 43;
   const cardHeight = height - cardTop - cardBottom;
-  const imageRatio = (height < 700 && card.clef.length > 200) ? 0.50 : 0.57;
+  const isSmallAndroid = Platform.OS === 'android' && height < 700;
+  const imageRatio = (height < 700 && card.clef.length > 200) || isSmallAndroid ? 0.50 : 0.57;
   const imageHeight = Math.round(cardHeight * imageRatio);
 
   const handleGoToDetail = () => {
@@ -118,10 +120,15 @@ export default function CardScreen() {
               {/* Texte de la clef */}
               <View style={styles.clefSection}>
                 <Text
-                  style={[styles.clefText, height < 700 && { lineHeight: 24 }]}
-                  {...(height < 700 && card.clef.length > 200
-                    ? { adjustsFontSizeToFit: true, numberOfLines: 8, minimumFontScale: 0.7 }
-                    : {})}
+                  style={[styles.clefText,
+                    isSmallAndroid ? { lineHeight: 26 } : (height < 700 && { lineHeight: 24 })
+                  ]}
+                  {...(isSmallAndroid
+                    ? { adjustsFontSizeToFit: true, numberOfLines: 9, minimumFontScale: 0.7 }
+                    : (height < 700 && card.clef.length > 200
+                      ? { adjustsFontSizeToFit: true, numberOfLines: 8, minimumFontScale: 0.7 }
+                      : {})
+                  )}
                 >
                   {card.clef}
                 </Text>
