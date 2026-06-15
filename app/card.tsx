@@ -21,7 +21,7 @@ const TOP_GUTTER = 40;
 
 export default function CardScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { height } = useWindowDimensions();
+  const { height, width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const tapHintOpacity = useRef(new Animated.Value(1)).current;
@@ -51,7 +51,9 @@ export default function CardScreen() {
   const cardBottom = insets.bottom + 43;
   const cardHeight = height - cardTop - cardBottom;
   const isSmallAndroid = Platform.OS === 'android' && height < 700;
-  const imageRatio = (height < 700 && card.clef.length > 200) || isSmallAndroid ? 0.50 : 0.57;
+  const isCompactIos = Platform.OS === 'ios' && (height < 700 || width <= 375);
+  const isLargeAndroidLongClef = Platform.OS === 'android' && !isSmallAndroid && card.clef.length > 200;
+  const imageRatio = (isCompactIos && card.clef.length > 200) || isSmallAndroid ? 0.50 : 0.57;
   const imageHeight = Math.round(cardHeight * imageRatio);
 
   const dynamicLineHeight =
@@ -135,7 +137,7 @@ export default function CardScreen() {
                   style={[styles.clefText,
                     isSmallAndroid
                       ? { lineHeight: dynamicLineHeight ?? 26 }
-                      : (height < 700 && { lineHeight: 24 })
+                      : ((isCompactIos || isLargeAndroidLongClef) && { lineHeight: 24 })
                   ]}
                   {...(isSmallAndroid
                     ? {
@@ -146,7 +148,7 @@ export default function CardScreen() {
                         numberOfLines: lineCount > 0 ? Math.max(lineCount, 9) : 9,
                         minimumFontScale: 0.7,
                       }
-                    : (height < 700 && card.clef.length > 200
+                    : ((isCompactIos || isLargeAndroidLongClef) && card.clef.length > 200
                       ? { adjustsFontSizeToFit: true, numberOfLines: 8, minimumFontScale: 0.7 }
                       : {})
                   )}
@@ -156,7 +158,7 @@ export default function CardScreen() {
               </View>
 
               {/* Séparateur bas : traits dégradés + grande étoile */}
-              <View style={[styles.bottomSepContainer, height < 700 && { paddingBottom: 6, gap: 4 }]}>
+              <View style={[styles.bottomSepContainer, (isCompactIos || isSmallAndroid) && { paddingBottom: 6, gap: 4 }]}>
                 <View style={styles.bottomSepRow}>
                   <LinearGradient
                     colors={[theme.colors.goldTransparent, theme.colors.gold] as [string, string]}
