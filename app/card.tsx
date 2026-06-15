@@ -4,7 +4,7 @@ import cards from '@/data/cards.json';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Platform,
@@ -25,6 +25,8 @@ export default function CardScreen() {
   const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const tapHintOpacity = useRef(new Animated.Value(1)).current;
+  const [containerHeight, setContainerHeight] = useState(0);
+  const [lineCount, setLineCount] = useState(0);
 
   const card = cards.find(c => String(c.id).padStart(2, '0') === id);
 
@@ -51,6 +53,11 @@ export default function CardScreen() {
   const isSmallAndroid = Platform.OS === 'android' && height < 700;
   const imageRatio = (height < 700 && card.clef.length > 200) || isSmallAndroid ? 0.50 : 0.57;
   const imageHeight = Math.round(cardHeight * imageRatio);
+
+  const dynamicLineHeight =
+    isSmallAndroid && containerHeight > 0 && lineCount > 0
+      ? Math.min(30, Math.max(22, containerHeight / lineCount))
+      : null;
 
   const handleGoToDetail = () => {
     router.push({ pathname: '/detail', params: { id: id ?? '' } });
@@ -118,13 +125,27 @@ export default function CardScreen() {
               </View>
 
               {/* Texte de la clef */}
-              <View style={styles.clefSection}>
+              <View
+                style={styles.clefSection}
+                onLayout={isSmallAndroid
+                  ? (e) => setContainerHeight(e.nativeEvent.layout.height)
+                  : undefined}
+              >
                 <Text
                   style={[styles.clefText,
-                    isSmallAndroid ? { lineHeight: 26 } : (height < 700 && { lineHeight: 24 })
+                    isSmallAndroid
+                      ? { lineHeight: dynamicLineHeight ?? 26 }
+                      : (height < 700 && { lineHeight: 24 })
                   ]}
                   {...(isSmallAndroid
-                    ? { adjustsFontSizeToFit: true, numberOfLines: 9, minimumFontScale: 0.7 }
+                    ? {
+                        onTextLayout: lineCount === 0
+                          ? (e) => setLineCount(e.nativeEvent.lines.length)
+                          : undefined,
+                        adjustsFontSizeToFit: dynamicLineHeight !== null,
+                        numberOfLines: lineCount > 0 ? Math.max(lineCount, 9) : 9,
+                        minimumFontScale: 0.7,
+                      }
                     : (height < 700 && card.clef.length > 200
                       ? { adjustsFontSizeToFit: true, numberOfLines: 8, minimumFontScale: 0.7 }
                       : {})
