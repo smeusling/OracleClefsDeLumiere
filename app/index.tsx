@@ -7,13 +7,14 @@ import { router, useFocusEffect } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useCallback, useRef, useState } from 'react';
 import { Animated, Linking, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import clefSource from '../assets/images/clef.png';
 
 export default function HomeScreen() {
   const { drawnId, draw } = useOracle();
-const fadeAnim = useRef(new Animated.Value(0)).current;
+  const insets = useSafeAreaInsets();
+  const fadeAnim = useRef(new Animated.Value(0)).current;
   const [modalVisible, setModalVisible] = useState(false);
   const modalOpacity = useRef(new Animated.Value(0)).current;
 
@@ -91,19 +92,22 @@ const fadeAnim = useRef(new Animated.Value(0)).current;
           </Pressable>
 
           <View style={styles.footer}>
-            <Pressable hitSlop={8} onPress={() => WebBrowser.openBrowserAsync('https://www.manonmoureau.fr/l-oracle-des-clefs-de-lumiere')}>
-              <Text style={styles.footerLink}>Se procurer</Text>
+            <Pressable hitSlop={8} onPress={() => WebBrowser.openBrowserAsync('https://www.manonmoureau.fr/soutenir')}>
+              <Text style={styles.footerLink}>Soutenir</Text>
             </Pressable>
             <Text style={styles.footerDot}>·</Text>
-            <Pressable hitSlop={8} onPress={openModal}>
-              <Text style={styles.footerLink}>À propos</Text>
+            <Pressable hitSlop={8} onPress={() => WebBrowser.openBrowserAsync('https://www.manonmoureau.fr/l-oracle-des-clefs-de-lumiere')}>
+              <Text style={styles.footerLink}>Se procurer</Text>
             </Pressable>
           </View>
         </View>
 
       </Animated.View>
 
-
+      {/* ── Bouton ⓘ ── */}
+      <Pressable style={[styles.infoButton, { top: insets.top + 0 }]} onPress={openModal} hitSlop={12}>
+        <Text style={styles.infoIcon}>ⓘ</Text>
+      </Pressable>
 
       {/* ── Modal À propos ── */}
       <Modal visible={modalVisible} transparent animationType="none" onRequestClose={closeModal}>
@@ -261,6 +265,24 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: theme.colors.textLight,
     opacity: 0.5,
+  },
+
+  /* ── Bouton ⓘ ── */
+  infoButton: {
+    position: 'absolute',
+    right: 20,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: theme.colors.backgroundFrosted,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoIcon: {
+    fontFamily: 'Lato_400Regular',
+    fontSize: 18,
+    color: theme.colors.textLight,
+    lineHeight: 22,
   },
 
   /* ── Modal ── */
