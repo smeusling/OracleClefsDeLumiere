@@ -1,12 +1,13 @@
 import { theme } from '@/constants/theme';
 import { useOracle } from '@/hooks/useOracle';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Application from 'expo-application';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as Application from 'expo-application';
 import { router, useFocusEffect } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { useCallback, useRef, useState } from 'react';
-import { Animated, Linking, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Animated, Linking, Modal, PixelRatio, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import clefSource from '../assets/images/clef.png';
@@ -17,6 +18,17 @@ export default function HomeScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [modalVisible, setModalVisible] = useState(false);
   const modalOpacity = useRef(new Animated.Value(0)).current;
+  const [fontScaleAlertVisible, setFontScaleAlertVisible] = useState(false);
+  const fontScaleAlertOpacity = useRef(new Animated.Value(0)).current;
+  const [dismissed, setDismissed] = useState(false);
+  const [doNotShow, setDoNotShow] = useState(false);
+  const hasCustomFontScale = PixelRatio.getFontScale() !== 1;
+
+  useEffect(() => {
+    AsyncStorage.getItem('fontScaleWarningDismissed').then(value => {
+      if (value === 'true') setDismissed(true);
+    });
+  }, []);
 
   const openModal = () => {
     setModalVisible(true);
@@ -26,6 +38,19 @@ export default function HomeScreen() {
   const closeModal = () => {
     Animated.timing(modalOpacity, { toValue: 0, duration: 300, useNativeDriver: true }).start(() => {
       setModalVisible(false);
+    });
+  };
+
+  const closeFontScaleAlert = (navigate = false) => {
+    if (doNotShow) {
+      AsyncStorage.setItem('fontScaleWarningDismissed', 'true');
+      setDismissed(true);
+    }
+    if (navigate && drawnId) {
+      router.push({ pathname: '/card', params: { id: drawnId } });
+    }
+    Animated.timing(fontScaleAlertOpacity, { toValue: 0, duration: 300, useNativeDriver: true }).start(() => {
+      setFontScaleAlertVisible(false);
     });
   };
 
@@ -84,7 +109,12 @@ export default function HomeScreen() {
             style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
             onPress={() => {
               if (drawnId) {
-                router.push({ pathname: '/card', params: { id: drawnId } });
+                if (hasCustomFontScale && !dismissed) {
+                  setFontScaleAlertVisible(true);
+                  Animated.timing(fontScaleAlertOpacity, { toValue: 1, duration: 300, useNativeDriver: true }).start();
+                } else {
+                  router.push({ pathname: '/card', params: { id: drawnId } });
+                }
               }
             }}
           >
@@ -116,6 +146,28 @@ export default function HomeScreen() {
             <Pressable style={styles.modalCloseButton} onPress={closeModal} hitSlop={12}>
               <Text style={styles.modalCloseText}>✕</Text>
             </Pressable>
+            {hasCustomFontScale && (
+              <>
+                <Text style={styles.fontScaleWarning}>
+                  {'Veuillez vérifier le paramétrage de la taille de police de votre appareil afin que le message de la Clef puisse s\'afficher entièrement à l\'écran.'}
+                </Text>
+                <View style={styles.warningDividerRow}>
+                  <LinearGradient
+                    colors={[theme.colors.primaryTransparent, theme.colors.primary] as [string, string]}
+                    start={{ x: 0, y: 0.5 }}
+                    end={{ x: 1, y: 0.5 }}
+                    style={styles.gradientLine}
+                  />
+                  <Text style={styles.separatorDiamond}>✦</Text>
+                  <LinearGradient
+                    colors={[theme.colors.primary, theme.colors.primaryTransparent] as [string, string]}
+                    start={{ x: 0, y: 0.5 }}
+                    end={{ x: 1, y: 0.5 }}
+                    style={styles.gradientLine}
+                  />
+                </View>
+              </>
+            )}
             <Text style={styles.modalText}>
               {'Application développée avec '}
               <Text style={styles.modalHeart}>{'♥︎'}</Text>
@@ -143,6 +195,43 @@ export default function HomeScreen() {
             <Text style={styles.versionText}>
               {`v${Application.nativeApplicationVersion ?? '—'} (${Application.nativeBuildVersion ?? '—'})`}
             </Text>
+          </View>
+        </Animated.View>
+      </Modal>
+
+      {/* ── Popup alerte taille de police ── */}
+      <Modal visible={fontScaleAlertVisible} transparent animationType="none" onRequestClose={() => closeFontScaleAlert(false)}>
+        <Animated.View style={[styles.modalOverlay, { opacity: fontScaleAlertOpacity }]}>
+          <View style={styles.modalBox}>
+            <Text style={styles.alertTitle}>Taille de police modifiée</Text>
+            <Text style={styles.modalText}>
+              {"Nous avons détecté que la taille de police de votre appareil a été modifiée. Si le message d'une Clef ne s'affiche pas entièrement à l'écran, nous vous invitons à revenir au réglage d'origine dans les paramètres de votre téléphone."}
+            </Text>
+            <Pressable style={styles.checkboxRow} onPress={() => setDoNotShow(v => !v)} hitSlop={8}>
+              <View style={[styles.checkbox, doNotShow && styles.checkboxChecked]}>
+                {doNotShow && <Text style={styles.checkboxMark}>✓</Text>}
+              </View>
+              <Text style={styles.checkboxLabel}>Ne plus me montrer ce message</Text>
+            </Pressable>
+            <Pressable hitSlop={8} onPress={() => closeFontScaleAlert(true)} style={{ width: '100%' }}>
+              <View style={styles.contactRow}>
+                <LinearGradient
+                  colors={[theme.colors.primaryTransparent, theme.colors.primary] as [string, string]}
+                  start={{ x: 0, y: 0.5 }}
+                  end={{ x: 1, y: 0.5 }}
+                  style={styles.gradientLine}
+                />
+                <Text style={styles.separatorDiamond}>✦</Text>
+                <Text style={styles.modalLink}>Continuer</Text>
+                <Text style={styles.separatorDiamond}>✦</Text>
+                <LinearGradient
+                  colors={[theme.colors.primary, theme.colors.primaryTransparent] as [string, string]}
+                  start={{ x: 0, y: 0.5 }}
+                  end={{ x: 1, y: 0.5 }}
+                  style={styles.gradientLine}
+                />
+              </View>
+            </Pressable>
           </View>
         </Animated.View>
       </Modal>
@@ -341,7 +430,7 @@ const styles = StyleSheet.create({
   },
   modalLink: {
     fontFamily: 'CormorantGaramond_600SemiBold_Italic',
-    fontSize: 19,
+    fontSize: 24,
     color: theme.colors.primary,
   },
   versionText: {
@@ -350,5 +439,60 @@ const styles = StyleSheet.create({
     color: theme.colors.textLight,
     opacity: 0.6,
     marginTop: -4,
+  },
+
+  alertTitle: {
+    fontFamily: 'CormorantGaramond_600SemiBold',
+    fontSize: 24,
+    lineHeight: 28,
+    color: theme.colors.primary,
+    textAlign: 'center',
+  },
+
+  /* ── Avertissement échelle de police ── */
+  fontScaleWarning: {
+    fontFamily: 'Lato_400Regular',
+    fontSize: 14,
+    lineHeight: 22,
+    color: theme.colors.text,
+    opacity: 0.85,
+    textAlign: 'center',
+  },
+  warningDividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    gap: 8,
+  },
+
+  /* ── Case à cocher popup police ── */
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 10,
+  },
+  checkbox: {
+    width: 18,
+    height: 18,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: theme.colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: theme.colors.primary,
+  },
+  checkboxMark: {
+    fontFamily: 'Lato_400Regular',
+    fontSize: 12,
+    color: theme.colors.background,
+    lineHeight: 14,
+  },
+  checkboxLabel: {
+    fontFamily: 'Lato_400Regular',
+    fontSize: 13,
+    color: theme.colors.textLight,
   },
 });
