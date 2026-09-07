@@ -72,8 +72,8 @@ export default function HomeScreen() {
 
         {/* En-tête */}
         <View style={styles.headerSection}>
-          <Text style={styles.surtitle}>L'ORACLE DES</Text>
-          <Text style={styles.title}>Clefs de Lumière</Text>
+          <Text style={styles.surtitle} maxFontSizeMultiplier={1.2}>L'ORACLE DES</Text>
+          <Text style={styles.title} maxFontSizeMultiplier={1.2}>Clefs de Lumière</Text>
           <View style={styles.separatorRow}>
             <LinearGradient
               colors={[theme.colors.goldTransparent, theme.colors.gold] as [string, string]}
@@ -118,16 +118,16 @@ export default function HomeScreen() {
               }
             }}
           >
-            <Text style={styles.buttonText}>✦{'  '}JE DÉCOUVRE MA CLEF{'  '}✦</Text>
+            <Text style={styles.buttonText} maxFontSizeMultiplier={1.2}>✦{'  '}JE DÉCOUVRE MA CLEF{'  '}✦</Text>
           </Pressable>
 
           <View style={styles.footer}>
             <Pressable hitSlop={8} onPress={() => WebBrowser.openBrowserAsync('https://www.manonmoureau.fr/soutenir')}>
-              <Text style={styles.footerLink}>Soutenir</Text>
+              <Text style={styles.footerLink} maxFontSizeMultiplier={1.2}>Soutenir</Text>
             </Pressable>
-            <Text style={styles.footerDot}>·</Text>
+            <Text style={styles.footerDot} maxFontSizeMultiplier={1.2}>·</Text>
             <Pressable hitSlop={8} onPress={() => WebBrowser.openBrowserAsync('https://www.manonmoureau.fr/l-oracle-des-clefs-de-lumiere')}>
-              <Text style={styles.footerLink}>Se procurer</Text>
+              <Text style={styles.footerLink} maxFontSizeMultiplier={1.2}>Se procurer</Text>
             </Pressable>
           </View>
         </View>
@@ -136,7 +136,7 @@ export default function HomeScreen() {
 
       {/* ── Bouton ⓘ ── */}
       <Pressable style={[styles.infoButton, { top: insets.top + 0 }]} onPress={openModal} hitSlop={12}>
-        <Text style={styles.infoIcon}>ⓘ</Text>
+        <Text style={styles.infoIcon} maxFontSizeMultiplier={1.2}>ⓘ</Text>
       </Pressable>
 
       {/* ── Modal À propos ── */}
